@@ -2,6 +2,11 @@
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["knowledge_engine*"]
+exclude = ["examples*", "tests*", "pdfs*"]
+
 [project]
 name = "knowledge-engine"
 version = "0.0.1"
