@@ -14,7 +14,10 @@ ds = (
 
 ds.write.files("output_docs")
 
-# output = ds.take_all()
+output = ds.take_all()
+for doc in output:
+    print(doc)
+
 #
 # df = DataFrame()
 #

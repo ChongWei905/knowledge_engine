@@ -3,7 +3,6 @@ import mimetypes
 from functools import partial
 from typing import Union, Optional, Callable, cast, Any
 
-from pandas import DataFrame
 from pyarrow._fs import FileSystem, FileSelector
 from ray.data.datasource import FileMetadataProvider
 
@@ -140,7 +139,7 @@ class BinaryScan(FileScan):
         else:
             paths = self._paths
 
-        df = DataFrame()
+        docs = []
 
         for orig_path in paths:
             from knowledge_engine.utils.pyarrow.fs import cross_check_infer_fs
@@ -153,14 +152,14 @@ class BinaryScan(FileScan):
             if path_info.is_file:
                 bytes = self._read_bytes_local(path_info)
                 row = self._to_document(bytes, path_info.path)
-                df = df._append(row, ignore_index=True)
+                docs.append(row)
             else:
                 for info in filesystem.get_file_info(FileSelector(path, recursive=True)):
                     bytes = self._read_bytes_local(info)
                     row = self._to_document(bytes, info.path)
-                    df = df._append(row, ignore_index=True)
+                    docs.append(row)
 
-        return UnifiedDataset.from_local(df)
+        return UnifiedDataset.from_local(docs)
 
     def _read_bytes_local(self, info) -> bytes:
         if not info.is_file:
@@ -174,7 +173,7 @@ class BinaryScan(FileScan):
         with self._filesystem.open_input_file(info.path) as file:
             return file.read()
 
-    def _to_document(self, binary_representation: bytes, path: str) -> dict[str, bytes]:
+    def _to_document(self, binary_representation: bytes, path: str) -> Document:
         document = Document()
 
         document.doc_id = mkdocid("f")
@@ -193,7 +192,10 @@ class BinaryScan(FileScan):
         # if self._path_filter is not None:
         #     from sycamore.materialize_config import MRRNameGroup
         #     MRRNameGroup.make_docid(document)
+        return document
 
+    def _to_document_dict(self, binary_representation: bytes, path: str) -> dict[str, bytes]:
+        document = self._to_document(binary_representation, path)
         return {"doc": document.serialize()}
 
     def _file_mime_type(self):
@@ -206,7 +208,7 @@ class BinaryScan(FileScan):
         return ret
 
     def _to_document_ray(self, row: dict[str, Any]) -> dict[str, bytes]:
-        return self._to_document(row["bytes"], row["path"])
+        return self._to_document_dict(row["bytes"], row["path"])
 
     def format(self):
         return self._binary_format

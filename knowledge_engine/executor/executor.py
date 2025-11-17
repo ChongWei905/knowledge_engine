@@ -24,8 +24,8 @@ class Execution:
         plan = self._apply_rules(plan)
         self._prepare(plan)
         ds = self._engine.execute_plan(plan, self._context, **kwargs)
-        for row in ds.iter_rows():
-            yield Document.from_row(row)
+        for row in ds.iter_docs():
+            yield row
 
         plan.traverse(visit=lambda n: n.finalize())
 

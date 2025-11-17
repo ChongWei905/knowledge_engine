@@ -2,7 +2,6 @@ import logging
 from typing import Optional, Any, Iterable, Callable
 
 import numpy
-from pandas import DataFrame
 from ray.data import ActorPoolStrategy
 
 from knowledge_engine.data.dataset import UnifiedDataset
@@ -115,9 +114,8 @@ class BaseMapTransform(UnaryNode):
 
     def execute_local(self) -> UnifiedDataset:
         # todo: currently only support function but not class
-        input_dataset = self.child().execute_local()
-        output_dataset = self._process_local(input_dataset)
-        return output_dataset
+        ds = self.child().execute_local()
+        return  ds.map_batches(self._f)
 
 
 
@@ -206,18 +204,6 @@ class BaseMapTransform(UnaryNode):
             )
 
         return type("BaseMapTransformCustom__" + name, (), {"__init__": ray_init, "__call__": ray_callable})
-
-    # ======================================
-    # Inner methods for ray processing
-    # ======================================
-
-    def _process_local(self, ds: UnifiedDataset) -> UnifiedDataset:
-        docs = [Document.deserialize(row['doc']) for row in ds.iter_rows()]
-        processed_docs = self._f(docs)
-        df = DataFrame()
-        for doc in processed_docs:
-            df = df._append({'doc': doc.serialize()}, ignore_index=True)
-        return UnifiedDataset.from_local(df)
 
 
 

@@ -3,6 +3,8 @@ from typing import Any, Iterable, Dict
 from ray.data import Dataset
 
 from knowledge_engine.data.dataset.dataset_adapter import DatasetAdapter
+from knowledge_engine.data.document import Document
+
 
 class RayDatasetAdapter(DatasetAdapter):
     def count(self, obj: Any) -> int:
@@ -10,6 +12,10 @@ class RayDatasetAdapter(DatasetAdapter):
 
     def iter_rows(self, obj: Any) -> Iterable[Dict[str, Any]]:
         return obj.iter_rows()
+
+    def iter_docs(self, obj: Any) -> Iterable[Document]:
+        for row in self.iter_rows(obj):
+            yield Document.from_row(row)
 
     def map_batches(self, obj: Any, fn, **kwargs) -> Dataset:
         return obj.map_batches(fn, **kwargs)

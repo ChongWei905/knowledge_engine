@@ -73,7 +73,7 @@ class FileWriter(Write):
         (filesystem, path) = cross_check_infer_fs(self.filesystem, self.path)
 
         ds = self.child().execute_local()
-        all_docs = [Document.deserialize(row['doc']) for row in ds.iter_rows()]
+        all_docs = ds.native()
 
         for d in all_docs:
             if isinstance(d, MetadataDocument) and not self.include_metadata:

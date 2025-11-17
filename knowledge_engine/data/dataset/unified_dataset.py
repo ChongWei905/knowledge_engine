@@ -1,8 +1,8 @@
 from typing import Any, Dict, Iterable
 
 from datasets import Dataset
-from pandas import DataFrame
 
+from knowledge_engine.data.document import Document
 from knowledge_engine.exec_mode import ExecMode
 from knowledge_engine.data.dataset.dataset_adapter import DatasetAdapter
 from knowledge_engine.data.dataset.local_adapter import LocalDatasetAdapter
@@ -40,6 +40,9 @@ class UnifiedDataset:
     def iter_rows(self) -> Iterable[Dict[str, Any]]:
         return self._adapter.iter_rows(self._obj)
 
+    def iter_docs(self) -> Iterable[Document]:
+        return self._adapter.iter_docs(self._obj)
+
     def map_batches(self, fn, **kwargs) -> "UnifiedDataset":
         obj = self._adapter.map_batches(self._obj, fn, **kwargs)
         return UnifiedDataset(self._exec_mode, obj)
@@ -53,6 +56,6 @@ class UnifiedDataset:
         return UnifiedDataset(ExecMode.RAY, ds)
 
     @staticmethod
-    def from_local(df: DataFrame) -> "UnifiedDataset":
-        return UnifiedDataset(ExecMode.LOCAL, df)
+    def from_local(docs: list[Document]) -> "UnifiedDataset":
+        return UnifiedDataset(ExecMode.LOCAL, docs)
 
