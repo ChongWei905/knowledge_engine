@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "knowledge-engine"
+version = "0.0.1"
+description = "an LLM-powered semantive data preparation system"
+readme = "README.md"
+requires-python = ">=3.10, <3.14"
+dependencies = [
+    "pyarrow>=20.0.0",
+    "ray>=2.51.1",
+    "pandas>=2.3.0",
+    "datasets>=2.19.2",
+    "nanoid>=2.0.0",
+    "pathlib>=1.0.1",
+    "numpy>=2.2.6",
+    "opencv-python>=4.11.0.86",
+    "pytesseract>=0.3.13",
+    "pillow>=11.3.0",
+]
+
+[project.optional-dependencies]
+tests = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
