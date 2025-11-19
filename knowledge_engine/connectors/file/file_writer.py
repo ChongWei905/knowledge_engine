@@ -11,9 +11,8 @@ from knowledge_engine.utils.file_utils import default_filename, default_doc_to_b
 
 
 class FileWriter(Write):
-    """Sycamore Write implementation that writes out binary or text representation.
+    """Write implementation of file connector that writes out binary or text representation.
 
-    Supports writting files to any FileSystem supported by Ray (e.g. arrow.fs.FileSystem).
     Each document is written to a separate file.
     """
 
@@ -30,7 +29,7 @@ class FileWriter(Write):
         """Initializes a FileWriter instance.
 
         Args:
-            plan: A Sycamore plan representing the DocSet to write out.
+            plan: A plan representing the DocSet to write out.
             path: The path prefix to write to. Should include the scheme.
             filesystem: The pyarrow.fs FileSystem to use.
             filename_fn: A function for generating a file name. Takes a Document
@@ -38,6 +37,7 @@ class FileWriter(Write):
             doc_to_bytes_fn: A function from a Document to bytes for generating the data to write.
                 Defaults to using text_representation if available, or binary_representation
                 if not.
+            include_metadata: Whether to include metadata documents in writing processes.
             ray_remote_args: Arguments to pass to the underlying execution environment.
         """
 

@@ -4,6 +4,20 @@ from typing import Optional, Any
 
 
 class Element(UserDict):
+    """
+    It is often useful to process different parts of a document separately. For example, you might want to process
+    tables differently than text paragraphs, and typically small chunks of text are embedded separately for vector
+    search. In knowledge_engine, these chunks are called elements. Like documents, elements contain a text or binary
+    representations and collection of properties that can be set by the user or by built-in transforms.
+
+    Attributes:
+        element_index: Integer index indicating element order within the parent document.
+        type: Element type label (e.g., "paragraph", "table", "image").
+        text_representation: Optional text content of the element.
+        binary_representation: Optional raw bytes content of the element.
+        properties: Arbitrary key/value properties associated with the element.
+        embedding: Optional vector representation of the element.
+    """
 
     def __init__(self, element=None, /, **kwargs):
         super().__init__(element, **kwargs)

@@ -10,9 +10,37 @@ if TYPE_CHECKING:
 
 
 class DocSet:
+    """A DocSet, short for “Document Set”, is a lazy pipeline that can be processed in a distributed
+    manner. It starts with a read step, and is followed by a series of transformation on the
+    DocSet.
+
+    Provides a variety of transformations on DocSets to help customers modify unstructured
+    data easily. Also provides a variety of readers and writers to start and finish a
+    pipeline.
+
+    Usage:
+    - Planning: chain transform builders to produce a new `DocSet` without executing.
+      - extract: extract contents and save in elements
+      - explode: explode elements to separate documents
+    - Execution:
+      - take_all: materialize results as a list of `Document`
+      - write: materialize to sinks
+      - execute: run for side effects.
+
+    Notes:
+    - Lazily evaluated: no work is performed until an execution method is called.
+    - Supports metadata documents; `take_all(include_metadata=True)` returns them, otherwise they
+      are filtered out.
+    """
+
     def __init__(self, context: Context, plan: Node):
         self.context = context
         self.plan = plan
+
+
+    # ======================================
+    # planning methods
+    # ======================================
 
     def extract(
         self, extractor: Extractor, **kwargs
@@ -29,11 +57,9 @@ class DocSet:
         return DocSet(self.context, explode)
 
 
-
     # ======================================
-    # executing methods
+    # execution methods
     # ======================================
-
 
     def take_all(self, limit: Optional[int] = None, include_metadata: bool = False, **kwargs) -> list[Document]:
         from knowledge_engine import Execution

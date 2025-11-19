@@ -49,6 +49,18 @@ def _noneOr(a: Any, default: Any) -> Any:
 
 
 class BaseMapTransform(UnaryNode):
+    """
+    BaseMapTransform abstracts away MetadataDocuments from all other transforms.
+
+    If f is a class type, the class will be instantiated and run as an actor in ray.
+    The parallelism will default to 1 if unspecified. constructor_args and
+    constructor_kwargs can be used to provide arguments when initializing the class
+
+    If f is an object type and parallelism is specified, it will run as an actor
+    Otherwise f will be run as a function.
+
+    Use args, kwargs to pass additional args to the function call.
+    """
 
     def __init__(
         self,
@@ -113,11 +125,22 @@ class BaseMapTransform(UnaryNode):
 
 
     def execute_local(self) -> UnifiedDataset:
-        # todo: currently only support function but not class
         ds = self.child().execute_local()
+        all_docs = ds.native()
+        docs = [d for d in all_docs if not isinstance(d, MetadataDocument)]
+        metadata = [d for d in all_docs if isinstance(d, MetadataDocument)]
+        extra_metadata: list[MetadataDocument] = []
+        with ThreadLocal(ADD_METADATA_TO_OUTPUT, extra_metadata):
+            # todo: currently only support function but not class, this should be fixed later.
+            outputs = self._f(docs)
+        to_docs = [d for d in outputs if not isinstance(d, MetadataDocument)]
+        if self._kwargs.get("drop_metadata", False):
+            return UnifiedDataset.from_local(to_docs)
+        if self._enable_auto_metadata and (len(docs) > 0 or len(to_docs) > 0):
+            outputs.extend(update_lineage(docs, to_docs))
+        outputs.extend(metadata)
+        outputs.extend(extra_metadata)
         return  ds.map_batches(self._f)
-
-
 
     # ======================================
     # Inner methods for ray processing
@@ -204,12 +227,3 @@ class BaseMapTransform(UnaryNode):
             )
 
         return type("BaseMapTransformCustom__" + name, (), {"__init__": ray_init, "__call__": ray_callable})
-
-
-
-
-
-
-
-
-

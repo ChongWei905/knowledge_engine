@@ -15,6 +15,10 @@ _engines: Dict[ExecMode, Engine] = {
 
 
 class Execution:
+    """
+    Orchestrates plan execution by selecting an engine based on the Context's ExecMode.
+    """
+
     def __init__(self, context: Context):
         self._context = context
         self._exec_mode = context.exec_mode

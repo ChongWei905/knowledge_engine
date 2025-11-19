@@ -9,7 +9,18 @@ from knowledge_engine.data.element import create_element, Element
 class Document(UserDict):
     """
     A Document is a generic representation of an unstructured document in a format like PDF, HTML. Though different
-    types of document may have different properties, they all contain the following common fields in Sycamore:
+    types of document may have different properties, they all contain the following common fields:
+    Attributes:
+        doc_id: Unique identifier for the document.
+        lineage_id: Unique identifier in the document lineage, updated on transformations.
+        type: Document type label (e.g., "pdf", "html").
+        text_representation: Text content extracted from the document, if available.
+        binary_representation: Raw bytes of the document (e.g., PDF file content).
+        elements: Structured child elements (e.g., pages, sections) as a list of `Element`.
+        embedding: Vector representation associated with the document.
+        shingles: Integer shingles (e.g., hashed n-grams) associated with the document.
+        parent_id: Identifier linking to a parent document when created via transforms.
+        properties: Arbitrary key/value properties (system or user-defined), such as path or filetype.
     """
 
     def __init__(self, document=None, /, **kwargs):
@@ -129,7 +140,7 @@ class Document(UserDict):
 
     @property
     def parent_id(self) -> Optional[str]:
-        """In Sycamore, certain operations create parent-child relationships between documents. For
+        """Certain operations create parent-child relationships between documents. For
         example, the explode transform promotes elements to be top-level documents, and these documents retain a
         pointer to the document from which they were created using the parent_id field. For those documents which
         have no parent, parent_id is None."""

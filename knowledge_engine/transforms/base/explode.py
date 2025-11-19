@@ -43,7 +43,7 @@ class Explode(SingleThreadUser, NonGPUUser, FlatMap):
             cur = Document(element.data)
             cur.doc_id = mkdocid("c")
             cur.parent_id = parent.doc_id
-            # todo: element currently not supported
+            # todo: table element currently not supported
             # if isinstance(element, TableElement):
             #     cur.text_representation = element.text_representation
             for doc_property in parent.properties.keys():

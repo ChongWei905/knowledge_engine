@@ -57,6 +57,3 @@ class FlatMap(BaseMapTransform):
                 return ret
 
             return _wrap
-
-    # def run(self, d: Document) -> list[Document]:
-    #     return self._local_process([d])

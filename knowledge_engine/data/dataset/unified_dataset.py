@@ -14,7 +14,23 @@ _adapters: Dict[ExecMode, DatasetAdapter] = {
 }
 
 class UnifiedDataset:
+    """
+    Unified view over datasets across execution modes (LOCAL, RAY).
+
+    Wraps the native container and delegates operations to a mode-specific
+    DatasetAdapter. Exposes a common surface: `count`, `iter_rows`, `iter_docs`,
+    and `map_batches`, plus factory constructors `from_ray` and `from_local`.
+
+    Please make sure to add corresponding adapter implementations if other modes
+    are going to be supported.
+    """
+
     def __init__(self, exec_mode: ExecMode, obj: Any):
+        """
+        Args:
+            exec_mode: Execution mode determining which adapter to use.
+            obj: Native dataset container (Ray `Dataset` for RAY, `list[Document]` for LOCAL).
+        """
         self._exec_mode = exec_mode
         self._obj = obj
         self._adapter = _adapters[exec_mode]

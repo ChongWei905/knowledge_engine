@@ -14,7 +14,7 @@ description = "an LLM-powered semantive data preparation system"
 readme = "README.md"
 requires-python = ">=3.10, <3.14"
 dependencies = [
-    "pyarrow>=20.0.0",
+    "pyarrow>=22.0.0",
     "ray>=2.51.1",
     "pandas>=2.3.0",
     "datasets>=2.19.2",

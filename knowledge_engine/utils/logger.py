@@ -10,7 +10,7 @@ def setup_logger():
     if handler_setup:
         return
     handler_setup = True
-    logger = logging.getLogger("sycamore")
+    logger = logging.getLogger("knowledge_engine")
     logger.setLevel(logging.INFO)
 
     logger_formatter = logging.Formatter("%(name)s - %(levelname)s - %(asctime)s - %(message)s")

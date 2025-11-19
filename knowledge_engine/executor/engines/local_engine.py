@@ -8,6 +8,7 @@ from knowledge_engine.executor.engines import Engine
 
 
 class LocalEngine(Engine):
+    """Local Engine which implements Engine interface."""
 
     def get_dataset_adapter(self) -> "DatasetAdapter":
         from knowledge_engine.data.dataset.local_adapter import LocalDatasetAdapter

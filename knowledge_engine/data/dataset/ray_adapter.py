@@ -7,6 +7,10 @@ from knowledge_engine.data.document import Document
 
 
 class RayDatasetAdapter(DatasetAdapter):
+    """Ray Dataset Adapter which implements DatasetAdapter interface.
+
+    Note that the native dataset is a `ray.data.Dataset`.
+    """
     def count(self, obj: Any) -> int:
         return obj.count()
 

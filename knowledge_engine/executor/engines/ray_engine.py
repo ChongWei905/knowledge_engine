@@ -10,6 +10,7 @@ from knowledge_engine.executor.engines import Engine
 
 
 class RayEngine(Engine):
+    """Ray Engine which implements Engine interface."""
 
     def get_dataset_adapter(self) -> "DatasetAdapter":
         from knowledge_engine.data.dataset.ray_adapter import RayDatasetAdapter

@@ -20,6 +20,8 @@ class Extractor(ABC):
 
 
 class EnhancedPDFTextExtractor(Extractor):
+    """Extract text from PDF files using PyMuPDF and OCR, refers to a private project called ferry."""
+
     def __init__(self, context: bool = True, type: str = "pymupdf"):
         self.context = context
         self.type = type

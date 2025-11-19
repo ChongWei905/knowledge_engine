@@ -56,6 +56,11 @@ class NodeTraverse:
         return self.after_fn(node)
 
 class Node(ABC):
+    """
+    A Node is the abstract base unit of a knowledge_engine Transform, which allows DocSets to transform themselves into end
+    results. Knowledge_engine processes this as a directed tree graph, which allows transforms to be linked to each other
+    and then implemented
+    """
 
     def __init__(
         self,
@@ -111,6 +116,7 @@ class Node(ABC):
         Traverse the node tree, functions will be converted to an object.
         See NodeTraverse for the semantics.
         """
+        # todo: it is not fully understood how traverse works with ray!
         if obj is None:
             assert before is not None or visit is not None or after is not None
             obj = NodeTraverse(before=before, visit=visit, after=after)
@@ -127,6 +133,8 @@ class Node(ABC):
 
 
 class LeafNode(Node):
+    """LeafNode is a special case of Node that has no children."""
+
     def __init__(self, **resource_args):
         super().__init__([], **resource_args)
 
@@ -134,6 +142,8 @@ class LeafNode(Node):
         return "leaf"
 
 class UnaryNode(Node):
+    """UnaryNode is a special case of Node that has exactly one child."""
+
     def __init__(self, child: Optional[Node], **resource_args):
         super().__init__([child], **resource_args)
 

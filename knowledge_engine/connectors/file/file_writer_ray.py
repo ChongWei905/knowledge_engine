@@ -13,6 +13,8 @@ from knowledge_engine.utils.file_utils import default_filename, default_doc_to_b
 
 
 class _FileDataSink(Datasink):
+    """FileDataSink is a class that implements ray.data.datasource.Datasink."""
+
     def __init__(
         self,
         path: str,

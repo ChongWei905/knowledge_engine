@@ -8,6 +8,10 @@ from knowledge_engine.transforms import Node
 
 
 class Engine(ABC):
+    """
+    An Engine is the abstract base unit of an Execution Engine, which allows Executor to execute operations
+    corresponding to specific execute modes.
+    """
 
     @abstractmethod
     def get_dataset_adapter(self) -> "DatasetAdapter":

@@ -66,9 +66,3 @@ class Map(BaseMapTransform):
                 return [f(d, *args, **kwargs) for d in docs]
 
             return _wrap
-
-    # todo: false run
-    # def run(self, d: Document) -> Document:
-    #     ret = self._local_process([d])
-    #     assert len(ret) == 1
-    #     return ret[0]

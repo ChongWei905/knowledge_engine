@@ -6,6 +6,10 @@ from knowledge_engine.exec_mode import ExecMode
 
 @dataclass
 class Context:
+    """
+    A class to implement a knowledge_engine Context, which initializes a Ray Worker and provides the ability
+    to read data into a DocSet
+    """
 
     exec_mode: ExecMode = ExecMode.LOCAL
     ray_args: Optional[dict[str, Any]] = None

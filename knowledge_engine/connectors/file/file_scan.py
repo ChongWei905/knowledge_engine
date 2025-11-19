@@ -22,10 +22,20 @@ class FileScan(Scan):
         paths: Union[str, list[str]],
         *,
         filesystem: Optional[FileSystem] = None,
-        parallelism: Optional[str] = None,
         override_num_blocks: Optional[int] = None,
         **resource_args,
     ):
+        """
+        Initialize a file scan node.
+
+        Args:
+            paths: Input path string or list; supports local paths or URIs (e.g., s3://).
+                A single string is normalized to a list.
+            filesystem: Optional PyArrow FileSystem; if not provided, the filesystem may be inferred to match paths.
+            override_num_blocks: Overrides the number of input partitions, affecting read parallelism and
+                split granularity.
+            resource_args: Resource and scheduling hints (in Ray mode may include `compute`, etc.).
+        """
         super().__init__(**resource_args)
         assert len(paths) > 0
         if isinstance(paths, str):
@@ -36,7 +46,6 @@ class FileScan(Scan):
         if self._filesystem is None:
             self._try_infer_fs()
 
-        assert parallelism is None, "Use override_num_blocks; remove parameter after 2025-03-01"
         self.override_num_blocks = override_num_blocks
 
     def _is_s3_scheme(self) -> bool:
@@ -70,23 +79,46 @@ class FileScan(Scan):
         # self._paths = new_paths
 
 class BinaryScan(FileScan):
+    """Scan data file into raw bytes
 
+        For each file, BinaryScan creates one Document in the form of
+        {"doc_id": nanoid,
+         "content": {"binary": xxx, "text": None},
+          "properties": {"path": xxx}, "filetype": yyy}.
+
+        Note: if you specify filter_paths_by_extension = False, you need to make sure
+        all the files that are scanned can be processed by the pipeline. Many pipelines
+        include file-type specific steps.
+        """
 
     def __init__(
         self,
         paths: Union[str, list[str]],
         *,
         binary_format: str,
-        parallelism: Optional[str] = None,
         override_num_blocks: Optional[int] = None,
         filesystem: Optional[FileSystem] = None,
         metadata_provider: Optional[FileMetadataProvider] = None,
         filter_paths_by_extension: bool = True,
         **resource_args,
     ):
+        """
+        Initialize a binary file scan node that filters by extension and produces `Document` objects.
+
+        Args:
+            paths: Input path(s), supports local paths and URIs.
+            binary_format: Binary type identifier (e.g., "pdf"); used to set document type and extension filtering.
+            override_num_blocks: Overrides partition count, affecting read parallelism and splitting.
+            filesystem: Optional PyArrow FileSystem.
+            metadata_provider: File-level metadata provider to enrich document properties.
+            filter_paths_by_extension: Whether to filter input files automatically by extension.
+            resource_args: Resource and scheduling hints.
+
+        Output:
+            - Acts as a leaf node in the plan; supports reading and producing datasets in local or Ray execution modes.
+        """
         super().__init__(
             paths,
-            parallelism=parallelism,
             override_num_blocks=override_num_blocks,
             filesystem=filesystem,
             **resource_args,
