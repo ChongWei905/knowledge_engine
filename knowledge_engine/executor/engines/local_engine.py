@@ -13,7 +13,7 @@ class LocalEngine(Engine):
         from knowledge_engine.data.dataset.local_adapter import LocalDatasetAdapter
         return LocalDatasetAdapter()
 
-    def get_execute_fun(self) -> Callable:
+    def get_execute_func(self) -> Callable:
         def execute(n: Node) -> "UnifiedDataset":
             return n.execute_local()
         return execute

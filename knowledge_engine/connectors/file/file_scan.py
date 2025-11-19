@@ -15,6 +15,7 @@ from knowledge_engine.utils.ray_utils import RayPathParser
 logger = logging.getLogger(__name__)
 
 class FileScan(Scan):
+    """A base scan class for file based data"""
 
     def __init__(
         self,

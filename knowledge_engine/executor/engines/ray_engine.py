@@ -15,7 +15,7 @@ class RayEngine(Engine):
         from knowledge_engine.data.dataset.ray_adapter import RayDatasetAdapter
         return RayDatasetAdapter()
 
-    def get_execute_fun(self) -> Callable:
+    def get_execute_func(self) -> Callable:
         def execute(n: Node) -> "UnifiedDataset":
             return n.execute_ray()
         return execute

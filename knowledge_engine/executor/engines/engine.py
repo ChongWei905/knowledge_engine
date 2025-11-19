@@ -14,7 +14,7 @@ class Engine(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_execute_fun(self) -> Callable:
+    def get_execute_func(self) -> Callable:
         raise NotImplementedError
 
     @abstractmethod
