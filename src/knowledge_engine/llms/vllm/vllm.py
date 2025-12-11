@@ -6,15 +6,44 @@ from typing import Optional, Any, Dict
 
 from transformers import AutoProcessor
 
-from knowledge_engine.llms.llms import LLM
+from knowledge_engine.llms.llms import LLM, LLMFactory
 from knowledge_engine.llms.config import LLMModel, LLMMode
 from knowledge_engine.llms.prompts import RenderedPrompt, RenderedMessage
 from knowledge_engine.llms.vllm.vllm_engine_wrapper import VLLMEngineWrapper, VLLMTaskType
-from knowledge_engine.llms.vllm.vllm_utils import get_prompt
 
 logger = logging.getLogger(__name__)
 
 
+class VLLMFactory(LLMFactory):
+    def __init__(
+        self,
+        model_name: str,
+        engine_kwargs: Optional[Dict[str, Any]] = None,
+        max_output_len: int = 5120,
+        max_pending_requests: int = -1,
+        default_mode: LLMMode = LLMMode.BATCH,
+        vllm_task_type: VLLMTaskType = VLLMTaskType.GENERATE,
+        default_llm_kwargs: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
+        self.model_name = model_name
+        self.engine_kwargs = engine_kwargs or {}
+        self.max_output_len = max_output_len
+        self.max_pending_requests = max_pending_requests
+        self.default_mode = default_mode
+        self.vllm_task_type = vllm_task_type
+        self.default_llm_kwargs = default_llm_kwargs or {}
+        self.kwargs = kwargs
+
+    def create(self) -> LLM:
+        return VLLM(self.model_name, self.engine_kwargs, self.max_output_len, self.max_pending_requests,
+                    self.default_mode, self.vllm_task_type, self.default_llm_kwargs, **self.kwargs)
+
+    def get_default_mode(self) -> LLMMode:
+        return self.default_mode
+
+    def get_model_name(self) -> str:
+        return self.model_name
 
 
 class VLLM(LLM):
@@ -230,7 +259,7 @@ class VLLM(LLM):
         if len(messages) > 1:
             logger.warning(f"VLLM only supports a single message, using the first message")
         message = messages[0]
-        message.content = get_prompt(self.processor, message.content, bool(message.images))
+        # message.content = get_prompt(self.processor, message.content, bool(message.images))
 
         return message
 

@@ -7,7 +7,22 @@ from PIL import Image
 
 from knowledge_engine.llms.config import LLMModel, LLMMode
 from knowledge_engine.llms.prompts import RenderedPrompt
+from vllm import LLM
 
+
+class LLMFactory(ABC):
+
+    @abstractmethod
+    def create(self) -> LLM:
+        pass
+
+    @abstractmethod
+    def get_default_mode(self) -> LLMMode:
+        pass
+
+    @abstractmethod
+    def get_model_name(self) -> str:
+        pass
 
 class LLM(ABC):
 

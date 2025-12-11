@@ -6,6 +6,8 @@ from contextlib import nullcontext
 from enum import Enum
 from typing import Any, Dict
 
+import asyncstdlib
+
 from knowledge_engine.llms.prompts import RenderedMessage
 from knowledge_engine.llms.vllm.vllm_engine_request import VLLMEngineRequest
 from knowledge_engine.llms.vllm.vllm_output_data import VLLMOutputData
@@ -65,7 +67,7 @@ class VLLMEngineWrapper:
         if self.max_pending_requests > 0:
             self.semaphore = asyncio.Semaphore(self.max_pending_requests)
         else:
-            self.semaphore = nullcontext()
+            self.semaphore = asyncstdlib.nullcontext()
 
         self.sampling_params = vllm.SamplingParams(max_tokens=max_output_len)
 

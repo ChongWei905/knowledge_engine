@@ -3,6 +3,9 @@ from typing import Optional, List
 
 from PIL import Image
 
+from knowledge_engine.data.document import Document
+from knowledge_engine.data.element import Element
+
 
 @dataclass
 class RenderedMessage:
@@ -30,3 +33,54 @@ class RenderedPrompt:
         return "\n".join(
             f"------------------------\n{m.role}\n-----------------------\n{m.content}\n" for m in self.messages
         )
+
+class PromptProcessor:
+
+    def render_document(self, doc: Document, **kwargs) -> RenderedPrompt:
+        """Render this prompt, given this document as context.
+        Used in llm_map
+
+        Args:
+            doc: The document to use to populate the prompt
+
+        Returns:
+            A fully rendered prompt that can be sent to an LLM for inference
+        """
+        raise NotImplementedError(f"render_document is not implemented for {self.__class__.__name__}")
+
+    def render_element(self, element: Element, doc: Document, **kwargs) -> RenderedPrompt:
+        """Render this prompt, given this element and its parent document as context.
+        Used in llm_map_elements
+
+        Args:
+            element: The element to use to populate the prompt
+            doc: parent document of the element
+
+        Returns:
+            A fully rendered prompt that can be sent to an LLM for inference
+        """
+        raise NotImplementedError(f"render_element is not implemented for {self.__class__.__name__}")
+
+    def render_multiple_documents(self, docs: list[Document], **kwargs) -> RenderedPrompt:
+        """Render this prompt, given a list of documents as context.
+        Used in llm_reduce
+
+        Args:
+            docs: The list of documents to use to populate the prompt
+
+        Returns:
+            A fully rendered prompt that can be sent to an LLM for inference"""
+        raise NotImplementedError(f"render_multiple_documents is not implemented for {self.__class__.__name__}")
+
+    def render_multiple_elements(self, elements: list[Element], doc: Document, **kwargs) -> RenderedPrompt:
+        """Render this prompt, given a list of elements from a document as context.
+
+        Args:
+            elements: The list of elements to use to populate the prompt
+            doc: The parent document of the elements
+
+        Returns:
+            A fully rendered prompt that can be sent to an LLM for inference
+        """
+        raise NotImplementedError(f"render_multiple_elements is not implemented for {self.__class__.__name__}")
+

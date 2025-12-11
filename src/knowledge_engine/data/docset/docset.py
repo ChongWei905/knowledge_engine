@@ -2,6 +2,7 @@ from typing import Optional, TYPE_CHECKING
 
 from knowledge_engine.context import Context
 from knowledge_engine.data.document import MetadataDocument, Document
+from knowledge_engine.transforms.base.llm_inference import LLMInference
 from knowledge_engine.transforms.extraction.extractor import Extractor
 from knowledge_engine.transforms import Node
 
@@ -48,6 +49,10 @@ class DocSet:
         from knowledge_engine.transforms.extraction import Extraction
 
         plan = Extraction(self.plan, extractor=extractor, **kwargs)
+        return DocSet(self.context, plan)
+
+    def llm_inference(self, llm_inference: LLMInference, **kwargs) -> "DocSet":
+        plan = llm_inference.as_llm_map(self.plan, **kwargs)
         return DocSet(self.context, plan)
 
     def explode(self, **resource_args) -> "DocSet":
