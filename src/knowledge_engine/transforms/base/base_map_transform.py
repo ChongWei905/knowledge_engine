@@ -134,13 +134,13 @@ class BaseMapTransform(UnaryNode):
             # todo: currently only support function but not class, this should be fixed later.
             outputs = self._f(docs)
         to_docs = [d for d in outputs if not isinstance(d, MetadataDocument)]
-        if self._kwargs.get("drop_metadata", False):
+        if self._kwargs and self._kwargs.get("drop_metadata", False):
             return UnifiedDataset.from_local(to_docs)
         if self._enable_auto_metadata and (len(docs) > 0 or len(to_docs) > 0):
             outputs.extend(update_lineage(docs, to_docs))
         outputs.extend(metadata)
         outputs.extend(extra_metadata)
-        return  ds.map_batches(self._f)
+        return UnifiedDataset.from_local(outputs)
 
     # ======================================
     # Inner methods for ray processing

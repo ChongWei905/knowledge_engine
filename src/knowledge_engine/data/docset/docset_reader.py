@@ -20,6 +20,7 @@ class DocSetReader:
         self,
         paths: Union[str, list[str]],
         binary_format: str,
+        concurrency: int | None = None,
         parallelism: Optional[str] = None,
         override_num_blocks: Optional[int] = None,
         filesystem: Optional[FileSystem] = None,
@@ -49,6 +50,7 @@ class DocSetReader:
             override_num_blocks=override_num_blocks,
             filesystem=filesystem,
             metadata_provider=metadata_provider,
+            concurrency=concurrency,
             **kwargs
         )
         return DocSet(self._context, scan)

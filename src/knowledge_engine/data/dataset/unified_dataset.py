@@ -1,6 +1,6 @@
 from typing import Any, Dict, Iterable
 
-from datasets import Dataset
+from ray.data import Dataset
 
 from knowledge_engine.data.document import Document
 from knowledge_engine.exec_mode import ExecMode

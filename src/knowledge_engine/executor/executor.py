@@ -30,6 +30,7 @@ class Execution:
         ds = self._engine.execute_plan(plan, self._context, **kwargs)
         for row in ds.iter_docs():
             yield row
+        print(ds.native().stats())
 
         plan.traverse(visit=lambda n: n.finalize())
 

@@ -100,6 +100,7 @@ class BinaryScan(FileScan):
         filesystem: Optional[FileSystem] = None,
         metadata_provider: Optional[FileMetadataProvider] = None,
         filter_paths_by_extension: bool = True,
+        concurrency: int | None = None,
         **resource_args,
     ):
         """
@@ -127,6 +128,7 @@ class BinaryScan(FileScan):
         self._metadata_provider = metadata_provider
         self._filter_paths_by_extension = filter_paths_by_extension
         self._path_filter = None
+        self.concurrency = concurrency
 
     def execute_ray(self, **kwargs) -> "UnifiedDataset":
         file_extensions = [self.format()] if self._filter_paths_by_extension else None
@@ -153,6 +155,7 @@ class BinaryScan(FileScan):
                 file_extensions=file_extensions,
                 partition_filter=partition_filter,
                 shuffle=shuffle,
+                concurrency=self.concurrency
             )
         except ValueError as e:
 
